@@ -1,0 +1,79 @@
+# Remove existing firewall rules
+/ip firewall filter remove [find]
+
+# Allow established connections
+/ip firewall filter add chain=input connection-state=established,related action=accept
+
+# Drop invalid connections
+/ip firewall filter add chain=input connection-state=invalid action=drop
+
+# Allow ICMP
+/ip firewall filter add chain=input protocol=icmp action=accept
+
+# Allow DNS
+/ip firewall filter add chain=input protocol=udp dst-port=53 action=accept
+/ip firewall filter add chain=input protocol=tcp dst-port=53 action=accept
+
+# Allow DHCP
+/ip firewall filter add chain=input protocol=udp dst-port=67-68 action=accept
+
+# Allow SSH
+/ip firewall filter add chain=input protocol=tcp dst-port=22 action=accept
+
+# Allow HTTP and HTTPS
+/ip firewall filter add chain=input protocol=tcp dst-port=80 action=accept
+/ip firewall filter add chain=input protocol=tcp dst-port=443 action=accept
+
+# Allow FTP
+/ip firewall filter add chain=input protocol=tcp dst-port=20-21 action=accept
+
+# Allow SMTP
+/ip firewall filter add chain=input protocol=tcp dst-port=25 action=accept
+
+# Allow VoIP
+/ip firewall filter add chain=input protocol=udp dst-port=5060-5061 action=accept
+
+# Drop all other input traffic
+/ip firewall filter add chain=input action=drop
+
+# Allow established and related connections for outgoing traffic
+/ip firewall filter add chain=output connection-state=established,related action=accept
+
+# Drop invalid outgoing connections
+/ip firewall filter add chain=output connection-state=invalid action=drop
+
+# Allow DNS for outgoing traffic
+/ip firewall filter add chain=output protocol=udp dst-port=53 action=accept
+/ip firewall filter add chain=output protocol=tcp dst-port=53 action=accept
+
+# Allow DHCP for outgoing traffic
+/ip firewall filter add chain=output protocol=udp dst-port=67-68 action=accept
+
+# Allow HTTP and HTTPS for outgoing traffic
+/ip firewall filter add chain=output protocol=tcp dst-port=80 action=accept
+/ip firewall filter add chain=output protocol=tcp dst-port=443 action=accept
+
+# Allow FTP for outgoing traffic
+/ip firewall filter add chain=output protocol=tcp dst-port=20-21 action=accept
+
+# Allow SMTP for outgoing traffic
+/ip firewall filter add chain=output protocol=tcp dst-port=25 action=accept
+
+# Allow VoIP for outgoing traffic
+/ip firewall filter add chain=output protocol=udp dst-port=5060-5061 action=accept
+
+# Drop all other outgoing traffic
+/ip firewall filter add chain=output action=drop
+
+# Block specific IP addresses known for malicious activity
+/ip firewall filter add chain=input src-address=1.2.3.4 action=drop
+/ip firewall filter add chain=input src-address=5.6.7.8 action=drop
+
+# Log specific packets or security events
+/ip firewall filter add chain=input protocol=tcp dst-port=22 action=log log-prefix="SSH Access:"
+/ip firewall filter add chain=output protocol=tcp dst-port=80 action=log log-prefix="HTTP Traffic:"
+
+# Add connection rate limiting
+/ip firewall filter add chain=input protocol=tcp dst-port=80 connection-limit=50,32 action=accept
+/ip firewall filter add chain=input protocol=tcp dst-port=443 connection-limit=50,32 action=accept
+
